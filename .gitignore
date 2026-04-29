@@ -1,0 +1,58 @@
+# IDE & Editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# System
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Database backups
+*.sql.bak
+*.sql.backup
+
+# Uploaded files
+public/uploads/*
+!public/uploads/.gitkeep
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# PHP
+php_cache/
+opcode-cache/
+
+# Session files (security)
+sessions/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+
+# Node (if needed in future)
+node_modules/
+package-lock.json
+yarn.lock
+
+# IDE specific
+.phpcs.xml
+phpcs-report.html
+
+# v0 sandbox files
+.next/
+.vercel/
+__v0_*
