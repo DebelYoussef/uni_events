@@ -5,12 +5,13 @@
  * POST handler - no HTML output
  */
 
-session_start();
-
 require_once '../config/database.php';
 require_once '../config/constants.php';
 require_once '../includes/functions.php';
 require_once '../includes/auth.php';
+
+// Initialize session with proper configuration (must be after includes)
+init_session();
 
 // Only accept POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

@@ -16,10 +16,9 @@ init_session();
 // Destroy the session
 destroy_session();
 
-// Set logout message
-session_start();
-set_message('You have been logged out successfully.', SUCCESS);
-session_destroy();
+// Start a new session with proper configuration to set the logout message
+init_session();
+set_message('Vous avez été déconnecté avec succès.', SUCCESS);
 
 // Redirect to login page
 header('Location: ' . BASE_URL . 'pages/auth/login.php');
