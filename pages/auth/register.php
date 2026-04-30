@@ -4,12 +4,9 @@
  * Allows new users to create accounts with role selection
  */
 
-session_start();
-
 require_once '../../includes/auth.php';
 
-
-// Redirect if already logged in
+// Initialize session and redirect if already logged in
 redirect_if_logged_in();
 
 // Get flash message if redirected here
