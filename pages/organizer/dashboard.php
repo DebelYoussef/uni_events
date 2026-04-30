@@ -20,10 +20,10 @@ $flash_message = get_flash_message();
 try {
     $stmt = $pdo->prepare('
         SELECT COUNT(*) as total,
-               SUM(CASE WHEN status = "published" THEN 1 ELSE 0 END) as published,
-               SUM(CASE WHEN status = "draft" THEN 1 ELSE 0 END) as draft,
-               SUM(CASE WHEN event_date >= CURDATE() THEN 1 ELSE 0 END) as upcoming
-        FROM events 
+               SUM(CASE WHEN status = "upcoming" THEN 1 ELSE 0 END) as published,
+               SUM(CASE WHEN status = "cancelled" THEN 1 ELSE 0 END) as draft,
+               SUM(CASE WHEN event_date >= CURDATE() AND status IN ("upcoming", "ongoing") THEN 1 ELSE 0 END) as upcoming
+        FROM events
         WHERE organizer_id = ?
     ');
     $stmt->execute([$user['id']]);
@@ -68,9 +68,9 @@ try {
         SELECT e.*, 
                (SELECT COUNT(*) FROM registrations WHERE event_id = e.id) as registration_count
         FROM events e 
-        WHERE e.organizer_id = ? 
+        WHERE e.organizer_id = ?
         AND e.event_date >= CURDATE()
-        AND e.status = "published"
+        AND e.status IN ("upcoming", "ongoing")
         ORDER BY e.event_date ASC 
         LIMIT 3
     ');
@@ -85,9 +85,10 @@ try {
     $stmt = $pdo->prepare('
         SELECT r.*, u.name as user_name, u.email as user_email, e.title as event_title
         FROM registrations r
-        INNER JOIN users u ON r.user_id = u.id
+        INNER JOIN users u ON r.student_id = u.id
         INNER JOIN events e ON r.event_id = e.id
         WHERE e.organizer_id = ?
+        AND r.status = "registered"
         ORDER BY r.registered_at DESC
         LIMIT 5
     ');
@@ -505,8 +506,8 @@ try {
                                             </div>
                                             <div class="event-list-meta">
                                                 <?php 
-                                                $status_class = $event['status'] === 'published' ? 'success' : 'warning';
-                                                $status_text = $event['status'] === 'published' ? 'Publie' : 'Brouillon';
+                                                $status_class = in_array($event['status'], ['upcoming', 'ongoing'], true) ? 'success' : 'warning';
+                                                $status_text = $event['status'];
                                                 ?>
                                                 <span class="badge badge-<?php echo $status_class; ?>">
                                                     <?php echo $status_text; ?>

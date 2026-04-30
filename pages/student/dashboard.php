@@ -20,10 +20,10 @@ $flash_message = get_flash_message();
 try {
     $stmt = $pdo->prepare('
         SELECT e.*, 
-               (SELECT COUNT(*) FROM registrations WHERE event_id = e.id) as registration_count
+               (SELECT COUNT(*) FROM registrations WHERE event_id = e.id AND status = "registered") as registration_count
         FROM events e 
-        WHERE e.event_date >= CURDATE() 
-        AND e.status = "published"
+        WHERE e.event_date >= CURDATE()
+        AND e.status IN ("upcoming", "ongoing")
         ORDER BY e.event_date ASC 
         LIMIT 5
     ');
@@ -38,7 +38,7 @@ try {
     $stmt = $pdo->prepare('
         SELECT COUNT(*) as count 
         FROM registrations 
-        WHERE user_id = ?
+        WHERE student_id = ? AND status = "registered"
     ');
     $stmt->execute([$user['id']]);
     $my_registrations_count = $stmt->fetch()['count'] ?? 0;
@@ -52,7 +52,7 @@ try {
         SELECT e.*, r.registered_at
         FROM events e 
         INNER JOIN registrations r ON e.id = r.event_id
-        WHERE r.user_id = ? 
+        WHERE r.student_id = ? AND r.status = "registered"
         AND e.event_date >= CURDATE()
         ORDER BY e.event_date ASC 
         LIMIT 3
@@ -66,9 +66,10 @@ try {
 // Fetch certificates count
 try {
     $stmt = $pdo->prepare('
-        SELECT COUNT(*) as count 
-        FROM certificates 
-        WHERE user_id = ?
+        SELECT COUNT(*) as count
+        FROM certificates c
+        INNER JOIN registrations r ON r.id = c.registration_id
+        WHERE r.student_id = ?
     ');
     $stmt->execute([$user['id']]);
     $certificates_count = $stmt->fetch()['count'] ?? 0;
@@ -443,8 +444,8 @@ try {
                                                     <?php echo $event['registration_count']; ?> inscrits
                                                 </span>
                                             </div>
-                                            <a href="event-details.php?id=<?php echo $event['id']; ?>" class="btn btn-primary btn-block" style="margin-top: calc(var(--spacing-unit) * 3);">
-                                                Voir details
+                                            <a href="events.php" class="btn btn-primary btn-block" style="margin-top: calc(var(--spacing-unit) * 3);">
+                                                S'inscrire
                                             </a>
                                         </div>
                                     </div>
