@@ -25,44 +25,54 @@ try {
         redirect_with_message('pages/student/certificates.php', 'Certificat introuvable.', ERROR);
     }
 
-    // Try TCPDF or FPDF if installed in the project.
+    // Load installed FPDF library.
     $autoload = __DIR__ . '/../vendor/autoload.php';
     if (file_exists($autoload)) {
         require_once $autoload;
     }
-    if (class_exists('TCPDF')) {
-        $pdf = new TCPDF();
-        $pdf->SetCreator('UniEvents');
-        $pdf->SetAuthor('UniEvents');
-        $pdf->SetTitle('Certificate');
-        $pdf->AddPage();
-        $html = '<h1 style="text-align:center;">Certificate of Participation</h1>';
-        $html .= '<p style="text-align:center;">This certifies that <strong>' . escape_output($cert['student_name']) . '</strong></p>';
-        $html .= '<p style="text-align:center;">participated in <strong>' . escape_output($cert['event_title']) . '</strong></p>';
-        $html .= '<p style="text-align:center;">Date: ' . escape_output((new DateTime($cert['event_date']))->format('d/m/Y')) . '</p>';
-        $html .= '<p style="text-align:center;">Code: ' . escape_output($cert['cert_code']) . '</p>';
-        $pdf->writeHTML($html);
-        $pdf->Output('certificate-' . $cert['cert_code'] . '.pdf', 'D');
-        exit();
+    if (!class_exists('FPDF')) {
+        $fpdf_file = __DIR__ . '/../vendor/setasign/fpdf/fpdf.php';
+        if (file_exists($fpdf_file)) {
+            require_once $fpdf_file;
+        }
     }
 
-    if (class_exists('FPDF')) {
-        $pdf = new FPDF();
-        $pdf->AddPage();
-        $pdf->SetFont('Arial', 'B', 18);
-        $pdf->Cell(0, 15, 'Certificate of Participation', 0, 1, 'C');
-        $pdf->SetFont('Arial', '', 12);
-        $pdf->Ln(10);
-        $pdf->Cell(0, 10, 'Student: ' . $cert['student_name'], 0, 1, 'C');
-        $pdf->Cell(0, 10, 'Event: ' . $cert['event_title'], 0, 1, 'C');
-        $pdf->Cell(0, 10, 'Date: ' . (new DateTime($cert['event_date']))->format('d/m/Y'), 0, 1, 'C');
-        $pdf->Cell(0, 10, 'Code: ' . $cert['cert_code'], 0, 1, 'C');
-        $pdf->Output('D', 'certificate-' . $cert['cert_code'] . '.pdf');
-        exit();
+    if (!class_exists('FPDF')) {
+        redirect_with_message('pages/student/certificates.php', 'FPDF non detecte.', WARNING);
     }
 
-    redirect_with_message('pages/student/certificates.php', 'Installez FPDF/TCPDF pour le telechargement PDF.', WARNING);
-} catch (PDOException $e) {
+    $pdf = new FPDF('L', 'mm', 'A4');
+    $pdf->AddPage();
+    $pdf->SetDrawColor(220, 20, 60);
+    $pdf->SetLineWidth(1.2);
+    $pdf->Rect(10, 10, 277, 190);
+    $pdf->SetFont('Arial', 'B', 30);
+    $pdf->SetTextColor(178, 34, 34);
+    $pdf->Cell(0, 30, 'CERTIFICATE OF PARTICIPATION', 0, 1, 'C');
+    $pdf->SetFont('Arial', '', 14);
+    $pdf->SetTextColor(40, 40, 40);
+    $pdf->Ln(10);
+    $pdf->Cell(0, 10, 'This is awarded to', 0, 1, 'C');
+    $pdf->SetFont('Arial', 'B', 26);
+    $pdf->SetTextColor(20, 20, 20);
+    $pdf->Cell(0, 16, iconv('UTF-8', 'windows-1252//TRANSLIT', $cert['student_name']), 0, 1, 'C');
+    $pdf->SetFont('Arial', '', 14);
+    $pdf->SetTextColor(40, 40, 40);
+    $pdf->Cell(0, 10, 'for successful participation in the event', 0, 1, 'C');
+    $pdf->SetFont('Arial', 'B', 20);
+    $pdf->Cell(0, 12, iconv('UTF-8', 'windows-1252//TRANSLIT', $cert['event_title']), 0, 1, 'C');
+    $pdf->Ln(5);
+    $pdf->SetFont('Arial', '', 12);
+    $pdf->Cell(0, 8, 'Date: ' . (new DateTime($cert['event_date']))->format('d/m/Y'), 0, 1, 'C');
+    $pdf->Cell(0, 8, 'Certificate Code: ' . $cert['cert_code'], 0, 1, 'C');
+    $pdf->Ln(18);
+    $pdf->Cell(130, 8, '____________________________', 0, 0, 'C');
+    $pdf->Cell(130, 8, '____________________________', 0, 1, 'C');
+    $pdf->Cell(130, 8, 'Organizer Signature', 0, 0, 'C');
+    $pdf->Cell(130, 8, 'UniEvents', 0, 1, 'C');
+    $pdf->Output('D', 'certificate-' . $cert['cert_code'] . '.pdf');
+    exit();
+} catch (Throwable $e) {
     error_log('Download certificate error: ' . $e->getMessage());
     redirect_with_message('pages/student/certificates.php', 'Erreur de telechargement.', ERROR);
 }

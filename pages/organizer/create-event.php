@@ -40,7 +40,7 @@ try {
 
         <div class="card">
             <div class="card-body">
-                <form action="../../actions/create-event.php" method="POST">
+                <form action="../../actions/create-event.php" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="csrf_token" value="<?php echo escape_output(generate_csrf_token()); ?>">
 
                     <div class="form-group">
@@ -78,6 +78,12 @@ try {
                     <div class="form-group">
                         <label for="location">Lieu</label>
                         <input type="text" id="location" name="location" maxlength="200">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="event_image">Image evenement</label>
+                        <input type="file" id="event_image" name="event_image" accept="image/png,image/jpeg,image/webp">
+                        <div class="form-help">Format: JPG/PNG/WEBP, max 5MB</div>
                     </div>
 
                     <button type="submit" class="btn btn-primary">Creer</button>

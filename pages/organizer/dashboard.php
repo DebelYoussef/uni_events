@@ -398,6 +398,7 @@ try {
                     <ul class="navbar-nav">
                         <li><a href="dashboard.php" class="active">Tableau de bord</a></li>
                         <li><a href="my-events.php">Mes evenements</a></li>
+                        <li><a href="upcoming-events.php">A venir</a></li>
                         <li><a href="create-event.php">Creer un evenement</a></li>
                         <li><a href="participants.php">Participants</a></li>
                         <li class="nav-item">

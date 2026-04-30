@@ -59,6 +59,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                 </a>
                             </li>
                             <li class="nav-item">
+                                <a href="<?php echo BASE_URL; ?>pages/student/upcoming-events.php" <?php echo $current_page === 'upcoming-events.php' ? 'class="active"' : ''; ?>>
+                                    A venir
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a href="<?php echo BASE_URL; ?>pages/student/my-registrations.php" <?php echo $current_page === 'my-registrations.php' ? 'class="active"' : ''; ?>>
                                     Mes inscriptions
                                 </a>
@@ -93,6 +98,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                 </a>
                             </li>
                             <li class="nav-item">
+                                <a href="<?php echo BASE_URL; ?>pages/organizer/upcoming-events.php" <?php echo $current_page === 'upcoming-events.php' ? 'class="active"' : ''; ?>>
+                                    A venir
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a href="<?php echo BASE_URL; ?>pages/organizer/participants.php" <?php echo $current_page === 'participants.php' ? 'class="active"' : ''; ?>>
                                     Participants
                                 </a>
@@ -119,6 +129,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             <li class="nav-item">
                                 <a href="<?php echo BASE_URL; ?>pages/admin/events.php" <?php echo $current_page === 'events.php' ? 'class="active"' : ''; ?>>
                                     Événements
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="<?php echo BASE_URL; ?>pages/admin/upcoming-events.php" <?php echo $current_page === 'upcoming-events.php' ? 'class="active"' : ''; ?>>
+                                    A venir
                                 </a>
                             </li>
                             <li class="nav-item">

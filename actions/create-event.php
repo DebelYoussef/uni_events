@@ -29,6 +29,13 @@ if (strtotime($event_date) === false) {
 }
 
 try {
+    $image_path = null;
+    try {
+        $image_path = upload_image('event_image', 'events');
+    } catch (RuntimeException $upload_error) {
+        redirect_with_message('pages/organizer/create-event.php', $upload_error->getMessage(), ERROR);
+    }
+
     $stmt = $pdo->prepare('SELECT id FROM categories WHERE id = ?');
     $stmt->execute([$category_id]);
     if (!$stmt->fetch()) {
@@ -36,8 +43,8 @@ try {
     }
 
     $stmt = $pdo->prepare('
-        INSERT INTO events (organizer_id, category_id, title, description, location, event_date, capacity, status, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, "upcoming", NOW(), NOW())
+        INSERT INTO events (organizer_id, category_id, title, description, location, event_date, capacity, status, image_path, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, "upcoming", ?, NOW(), NOW())
     ');
     $stmt->execute([
         $user['id'],
@@ -46,7 +53,8 @@ try {
         $description !== '' ? $description : null,
         $location !== '' ? $location : null,
         date('Y-m-d H:i:s', strtotime($event_date)),
-        $capacity
+        $capacity,
+        $image_path
     ]);
 
     redirect_with_message('pages/organizer/my-events.php', 'Evenement cree avec succes.');

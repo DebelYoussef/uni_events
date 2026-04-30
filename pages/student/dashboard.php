@@ -346,6 +346,7 @@ try {
                     <ul class="navbar-nav">
                         <li><a href="dashboard.php" class="active">Tableau de bord</a></li>
                         <li><a href="events.php">Evenements</a></li>
+                        <li><a href="upcoming-events.php">A venir</a></li>
                         <li><a href="my-registrations.php">Mes inscriptions</a></li>
                         <li><a href="certificates.php">Certificats</a></li>
                         <li class="nav-item">

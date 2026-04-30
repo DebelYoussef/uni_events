@@ -53,6 +53,7 @@ try {
                     <table>
                         <thead>
                             <tr>
+                                <th>Image</th>
                                 <th>Titre</th>
                                 <th>Categorie</th>
                                 <th>Date</th>
@@ -65,6 +66,13 @@ try {
                         <tbody>
                             <?php foreach ($events as $event): ?>
                                 <tr>
+                                    <td>
+                                        <?php if (!empty($event['image_path'])): ?>
+                                            <img src="<?php echo escape_output(asset_url($event['image_path'])); ?>" alt="Event" style="width:80px;height:55px;object-fit:cover;border-radius:8px;">
+                                        <?php else: ?>
+                                            <div style="width:80px;height:55px;border-radius:8px;background:linear-gradient(135deg,#e5e7eb,#cbd5e1);"></div>
+                                        <?php endif; ?>
+                                    </td>
                                     <td><?php echo escape_output($event['title']); ?></td>
                                     <td><?php echo escape_output($event['category_name'] ?? '-'); ?></td>
                                     <td><?php echo format_date($event['event_date']); ?></td>

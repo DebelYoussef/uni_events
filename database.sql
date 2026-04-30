@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS users (
     role ENUM('student', 'organizer', 'admin') DEFAULT 'student',
     is_approved TINYINT(1) DEFAULT 0 COMMENT 'For organizers: 0=pending, 1=approved',
     student_id VARCHAR(20) NULL,
+    profile_photo VARCHAR(255) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_email (email),
@@ -50,6 +51,7 @@ CREATE TABLE IF NOT EXISTS events (
     event_date DATETIME NOT NULL,
     capacity INT UNSIGNED DEFAULT 100,
     status ENUM('upcoming', 'ongoing', 'past', 'cancelled') DEFAULT 'upcoming',
+    image_path VARCHAR(255) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (organizer_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -114,7 +116,7 @@ CREATE TABLE IF NOT EXISTS certificates (
 -- Email: admin@unievents.local
 -- Password: Admin@123 (bcrypt hash)
 INSERT IGNORE INTO users (name, email, password, role, is_approved, created_at) VALUES
-('Admin User', 'admin@unievents.local', '$2y$12$fP3hKHLl5gMQ5.1dD0zf5uVaA3pQ.N2Q.U0Q.N2Q.U0Q.N2Q.U0Q.N2', 'admin', 1, NOW());
+('Admin User', 'admin@unievents.local', '$2y$12$v0hErdJhxvnGhN1jCKLiiORN95i9hmbJI6/tVUz654Vh1AoTRMi5a', 'admin', 1, NOW());
 
 -- Insert sample categories
 INSERT IGNORE INTO categories (name, color, icon) VALUES

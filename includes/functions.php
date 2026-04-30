@@ -234,3 +234,62 @@ function escape_output($text)
 {
     return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
 }
+
+/**
+ * Build application-relative asset URL from path stored in DB.
+ */
+function asset_url($relative_path)
+{
+    if (!$relative_path) {
+        return null;
+    }
+    return BASE_URL . 'public/' . ltrim($relative_path, '/');
+}
+
+/**
+ * Handle secure image upload and return relative path.
+ */
+function upload_image($field_name, $sub_dir)
+{
+    if (!isset($_FILES[$field_name]) || !is_array($_FILES[$field_name])) {
+        return null;
+    }
+
+    $file = $_FILES[$field_name];
+    if (($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+        return null;
+    }
+    if (($file['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) {
+        throw new RuntimeException('Upload image echoue.');
+    }
+
+    $max_size = 5 * 1024 * 1024;
+    if (($file['size'] ?? 0) > $max_size) {
+        throw new RuntimeException('Image trop volumineuse (max 5MB).');
+    }
+
+    $tmp_path = $file['tmp_name'] ?? '';
+    $mime = mime_content_type($tmp_path);
+    $allowed = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp'
+    ];
+    if (!isset($allowed[$mime])) {
+        throw new RuntimeException('Format image invalide. Utilisez JPG, PNG ou WEBP.');
+    }
+
+    $file_name = uniqid('img_', true) . '.' . $allowed[$mime];
+    $relative_dir = 'uploads/' . trim($sub_dir, '/');
+    $absolute_dir = dirname(__DIR__) . '/public/' . $relative_dir;
+    if (!is_dir($absolute_dir) && !mkdir($absolute_dir, 0777, true) && !is_dir($absolute_dir)) {
+        throw new RuntimeException('Impossible de creer le dossier de destination.');
+    }
+
+    $dest = $absolute_dir . '/' . $file_name;
+    if (!move_uploaded_file($tmp_path, $dest)) {
+        throw new RuntimeException('Impossible de sauvegarder l image.');
+    }
+
+    return $relative_dir . '/' . $file_name;
+}

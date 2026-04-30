@@ -130,6 +130,7 @@ try {
                     <table>
                         <thead>
                             <tr>
+                                <th>Image</th>
                                 <th>Titre</th>
                                 <th>Categorie</th>
                                 <th>Date</th>
@@ -142,6 +143,13 @@ try {
                             <?php foreach ($events as $event): ?>
                                 <?php $remaining = (int) $event['capacity'] - (int) $event['registered_count']; ?>
                                 <tr>
+                                    <td>
+                                        <?php if (!empty($event['image_path'])): ?>
+                                            <img src="<?php echo escape_output(asset_url($event['image_path'])); ?>" alt="Event" style="width:80px;height:55px;object-fit:cover;border-radius:8px;">
+                                        <?php else: ?>
+                                            <div style="width:80px;height:55px;border-radius:8px;background:linear-gradient(135deg,#e5e7eb,#cbd5e1);"></div>
+                                        <?php endif; ?>
+                                    </td>
                                     <td>
                                         <strong><?php echo escape_output($event['title']); ?></strong><br>
                                         <small class="text-muted"><?php echo escape_output($event['organizer_name']); ?></small>

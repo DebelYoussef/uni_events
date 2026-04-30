@@ -286,6 +286,7 @@ try {
                         <li><a href="dashboard.php" class="active">Tableau de bord</a></li>
                         <li><a href="users.php">Utilisateurs</a></li>
                         <li><a href="events.php">Evenements</a></li>
+                        <li><a href="upcoming-events.php">A venir</a></li>
                         <li><a href="approvals.php">Approbations</a></li>
                         <li class="nav-item">
                             <a href="#"><?php echo escape_output($user['name']); ?></a>

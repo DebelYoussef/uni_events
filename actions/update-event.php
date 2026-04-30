@@ -32,15 +32,26 @@ if (!in_array($status, $allowed_statuses, true)) {
 }
 
 try {
-    $stmt = $pdo->prepare('SELECT id FROM events WHERE id = ? AND organizer_id = ?');
+    $stmt = $pdo->prepare('SELECT id, image_path FROM events WHERE id = ? AND organizer_id = ?');
     $stmt->execute([$event_id, $user['id']]);
-    if (!$stmt->fetch()) {
+    $event = $stmt->fetch();
+    if (!$event) {
         redirect_with_message('pages/organizer/my-events.php', 'Evenement introuvable ou non autorise.', ERROR);
+    }
+
+    $image_path = $event['image_path'];
+    try {
+        $new_image = upload_image('event_image', 'events');
+        if ($new_image) {
+            $image_path = $new_image;
+        }
+    } catch (RuntimeException $upload_error) {
+        redirect_with_message('pages/organizer/my-events.php', $upload_error->getMessage(), ERROR);
     }
 
     $stmt = $pdo->prepare('
         UPDATE events
-        SET title = ?, event_date = ?, capacity = ?, category_id = ?, status = ?, description = ?, location = ?, updated_at = NOW()
+        SET title = ?, event_date = ?, capacity = ?, category_id = ?, status = ?, description = ?, location = ?, image_path = ?, updated_at = NOW()
         WHERE id = ? AND organizer_id = ?
     ');
     $stmt->execute([
@@ -51,6 +62,7 @@ try {
         $status,
         $description !== '' ? $description : null,
         $location !== '' ? $location : null,
+        $image_path,
         $event_id,
         $user['id']
     ]);

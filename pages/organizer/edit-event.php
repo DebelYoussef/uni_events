@@ -46,7 +46,7 @@ try {
 
         <div class="card">
             <div class="card-body">
-                <form action="../../actions/update-event.php" method="POST">
+                <form action="../../actions/update-event.php" method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="csrf_token" value="<?php echo escape_output(generate_csrf_token()); ?>">
                     <input type="hidden" name="event_id" value="<?php echo (int) $event['id']; ?>">
 
@@ -95,6 +95,17 @@ try {
                     <div class="form-group">
                         <label for="location">Lieu</label>
                         <input type="text" id="location" name="location" maxlength="200" value="<?php echo escape_output($event['location'] ?? ''); ?>">
+                    </div>
+
+                    <?php if (!empty($event['image_path'])): ?>
+                        <div class="form-group">
+                            <label>Image actuelle</label>
+                            <div><img src="<?php echo escape_output(asset_url($event['image_path'])); ?>" alt="Event image" style="max-width:260px;border-radius:10px;"></div>
+                        </div>
+                    <?php endif; ?>
+                    <div class="form-group">
+                        <label for="event_image">Changer image evenement</label>
+                        <input type="file" id="event_image" name="event_image" accept="image/png,image/jpeg,image/webp">
                     </div>
 
                     <button type="submit" class="btn btn-primary">Enregistrer</button>
