@@ -4,6 +4,8 @@
  * Allows new users to create accounts with role selection
  */
 
+session_start();
+
 require_once '../../includes/auth.php';
 
 
@@ -12,6 +14,14 @@ redirect_if_logged_in();
 
 // Get flash message if redirected here
 $flash_message = get_flash_message();
+
+// Get any validation errors from previous submission
+$register_errors = $_SESSION['register_errors'] ?? [];
+$register_form_data = $_SESSION['register_form_data'] ?? [];
+
+// Clear the session errors after retrieving them
+unset($_SESSION['register_errors']);
+unset($_SESSION['register_form_data']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -48,9 +58,9 @@ $flash_message = get_flash_message();
                         required
                         minlength="2"
                         maxlength="100"
-                        value="<?php echo isset($_POST['name']) ? escape_output($_POST['name']) : ''; ?>"
+                        value="<?php echo escape_output($register_form_data['name'] ?? ''); ?>"
                     >
-                    <div class="form-error" id="name-error"></div>
+                    <div class="form-error" id="name-error"><?php echo escape_output($register_errors['name'] ?? ''); ?></div>
                 </div>
 
                 <!-- Email -->
@@ -62,23 +72,24 @@ $flash_message = get_flash_message();
                         name="email" 
                         placeholder="Entrez votre e-mail"
                         required
-                        value="<?php echo isset($_POST['email']) ? escape_output($_POST['email']) : ''; ?>"
+                        value="<?php echo escape_output($register_form_data['email'] ?? ''); ?>"
                     >
-                    <div class="form-error" id="email-error"></div>
+                    <div class="form-error" id="email-error"><?php echo escape_output($register_errors['email'] ?? ''); ?></div>
                 </div>
 
-                <!-- Student ID (Optional) -->
+                <!-- Student ID (Required for students) -->
                 <div class="form-group">
-                    <label for="student_id">ID étudiant (facultatif)</label>
+                    <label for="student_id">ID étudiant <span id="student-id-required" style="display: none; color: red;">*</span></label>
                     <input 
                         type="text" 
                         id="student_id" 
                         name="student_id" 
                         placeholder="ex. STU2024001"
                         maxlength="20"
-                        value="<?php echo isset($_POST['student_id']) ? escape_output($_POST['student_id']) : ''; ?>"
+                        value="<?php echo escape_output($register_form_data['student_id'] ?? ''); ?>"
                     >
                     <div class="form-help">Requis pour le rôle étudiant</div>
+                    <div class="form-error" id="student-id-error"><?php echo escape_output($register_errors['student_id'] ?? ''); ?></div>
                 </div>
 
                 <!-- Role Selection -->
@@ -86,15 +97,15 @@ $flash_message = get_flash_message();
                     <label for="role">Type de compte *</label>
                     <select id="role" name="role" required onchange="updateRoleInfo()">
                         <option value="">-- Sélectionnez le type de compte --</option>
-                        <option value="student" <?php echo isset($_POST['role']) && $_POST['role'] === 'student' ? 'selected' : ''; ?>>
+                        <option value="student" <?php echo ($register_form_data['role'] ?? '') === 'student' ? 'selected' : ''; ?>>
                             Étudiant
                         </option>
-                        <option value="organizer" <?php echo isset($_POST['role']) && $_POST['role'] === 'organizer' ? 'selected' : ''; ?>>
+                        <option value="organizer" <?php echo ($register_form_data['role'] ?? '') === 'organizer' ? 'selected' : ''; ?>>
                             Organisateur d'événements
                         </option>
                     </select>
                     <div class="form-help" id="role-info"></div>
-                    <div class="form-error" id="role-error"></div>
+                    <div class="form-error" id="role-error"><?php echo escape_output($register_errors['role'] ?? ''); ?></div>
                 </div>
 
                 <!-- Password -->
@@ -117,7 +128,7 @@ $flash_message = get_flash_message();
                             <li id="req-special">Au moins un caractère spécial (!@#$%^&*)</li>
                         </ul>
                     </div>
-                    <div class="form-error" id="password-error"></div>
+                    <div class="form-error" id="password-error"><?php echo escape_output($register_errors['password'] ?? ''); ?></div>
                 </div>
 
                 <!-- Confirm Password -->
@@ -130,7 +141,7 @@ $flash_message = get_flash_message();
                         placeholder="Saisissez à nouveau votre mot de passe"
                         required
                     >
-                    <div class="form-error" id="confirm-password-error"></div>
+                    <div class="form-error" id="confirm-password-error"><?php echo escape_output($register_errors['confirm_password'] ?? ''); ?></div>
                 </div>
 
                 <!-- Submit Button -->
@@ -178,13 +189,21 @@ $flash_message = get_flash_message();
         function updateRoleInfo() {
             const role = roleSelect.value;
             const roleInfo = document.getElementById('role-info');
+            const studentIdRequired = document.getElementById('student-id-required');
+            const studentIdField = document.getElementById('student_id');
             
             if (role === 'student') {
                 roleInfo.textContent = '🎓 Compte étudiant - Inscrivez-vous aux événements et téléchargez des certificats';
+                studentIdRequired.style.display = 'inline';
+                studentIdField.required = true;
             } else if (role === 'organizer') {
                 roleInfo.textContent = '📋 Compte organisateur - Créez et gérez des événements (nécessite l'approbation de l'administrateur)';
+                studentIdRequired.style.display = 'none';
+                studentIdField.required = false;
             } else {
                 roleInfo.textContent = '';
+                studentIdRequired.style.display = 'none';
+                studentIdField.required = false;
             }
         }
 
@@ -214,6 +233,13 @@ $flash_message = get_flash_message();
                 const role = document.getElementById('role').value;
                 if (!role) {
                     document.getElementById('role-error').textContent = 'Veuillez sélectionner un type de compte';
+                    isValid = false;
+                }
+                
+                // Validate student ID for student role
+                const studentId = document.getElementById('student_id').value.trim();
+                if (role === 'student' && !studentId) {
+                    document.getElementById('student-id-error').textContent = 'L\'ID étudiant est requis pour les comptes étudiants';
                     isValid = false;
                 }
                 
