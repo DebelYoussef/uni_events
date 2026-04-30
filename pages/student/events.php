@@ -72,7 +72,10 @@ try {
 </head>
 <body>
     <div class="container" style="padding-top:2rem; padding-bottom:2rem;">
-        <h1>Parcourir les evenements</h1>
+        <div class="flex-between mb-2">
+            <h1>Parcourir les evenements</h1>
+            <button type="button" class="btn btn-outline" onclick="history.back()">← Retour</button>
+        </div>
 
         <?php if ($flash_message): ?>
             <div class="alert alert-<?php echo escape_output($flash_message['type']); ?>">

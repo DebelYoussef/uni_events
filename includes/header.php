@@ -63,6 +63,16 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                     Mes inscriptions
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="<?php echo BASE_URL; ?>pages/student/history.php" <?php echo $current_page === 'history.php' ? 'class="active"' : ''; ?>>
+                                    Mon historique
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="<?php echo BASE_URL; ?>pages/student/certificates.php" <?php echo $current_page === 'certificates.php' ? 'class="active"' : ''; ?>>
+                                    Certificats
+                                </a>
+                            </li>
                         <?php endif; ?>
 
                         <!-- Organizer Navigation -->
@@ -75,6 +85,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             <li class="nav-item">
                                 <a href="<?php echo BASE_URL; ?>pages/organizer/create-event.php" <?php echo $current_page === 'create-event.php' ? 'class="active"' : ''; ?>>
                                     Créer un événement
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="<?php echo BASE_URL; ?>pages/organizer/my-events.php" <?php echo $current_page === 'my-events.php' ? 'class="active"' : ''; ?>>
+                                    Mes événements
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -97,7 +112,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="<?php echo BASE_URL; ?>pages/admin/approve-organizer.php" <?php echo $current_page === 'approve-organizer.php' ? 'class="active"' : ''; ?>>
+                                <a href="<?php echo BASE_URL; ?>pages/admin/approvals.php" <?php echo $current_page === 'approvals.php' ? 'class="active"' : ''; ?>>
                                     Approuver les organisateurs
                                 </a>
                             </li>
@@ -120,7 +135,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             </a>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a href="#">
+                                    <a href="<?php echo BASE_URL; ?>pages/<?php echo escape_output($user['role']); ?>/profile.php">
                                         Rôle : <?php echo $user['role'] === ROLE_STUDENT ? 'Étudiant' : ($user['role'] === ROLE_ORGANIZER ? 'Organisateur' : 'Administrateur'); ?>
                                     </a>
                                 </li>

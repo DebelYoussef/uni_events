@@ -37,8 +37,8 @@ try {
     $stmt = $pdo->query('
         SELECT 
             COUNT(*) as total_events,
-            SUM(CASE WHEN status = "published" THEN 1 ELSE 0 END) as published,
-            SUM(CASE WHEN event_date >= CURDATE() THEN 1 ELSE 0 END) as upcoming
+            SUM(CASE WHEN status IN ("upcoming","ongoing") THEN 1 ELSE 0 END) as published,
+            SUM(CASE WHEN event_date >= CURDATE() AND status IN ("upcoming","ongoing") THEN 1 ELSE 0 END) as upcoming
         FROM events
     ');
     $event_stats = $stmt->fetch();
@@ -398,7 +398,7 @@ try {
                                         </div>
                                         <div>
                                             <?php 
-                                            $status_class = $event['status'] === 'published' ? 'success' : 'warning';
+                                            $status_class = in_array($event['status'], ['upcoming', 'ongoing'], true) ? 'success' : 'warning';
                                             ?>
                                             <span class="badge badge-<?php echo $status_class; ?>">
                                                 <?php echo $event['registration_count']; ?> inscrit(s)
@@ -459,8 +459,8 @@ try {
                                         <p><?php echo escape_output($org['email']); ?> - Inscrit le <?php echo format_date($org['created_at'], 'd/m/Y'); ?></p>
                                     </div>
                                     <div class="pending-actions">
-                                        <a href="approve-organizer.php?id=<?php echo $org['id']; ?>&action=approve" class="btn btn-success btn-sm">Approuver</a>
-                                        <a href="approve-organizer.php?id=<?php echo $org['id']; ?>&action=reject" class="btn btn-danger btn-sm">Rejeter</a>
+                            <a href="../../actions/admin-approve-organizer.php?id=<?php echo $org['id']; ?>&action=approve" class="btn btn-success btn-sm">Approuver</a>
+                            <a href="../../actions/admin-approve-organizer.php?id=<?php echo $org['id']; ?>&action=reject" class="btn btn-danger btn-sm">Rejeter</a>
                                     </div>
                                 </div>
                             <?php endforeach; ?>

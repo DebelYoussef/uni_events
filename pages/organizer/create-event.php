@@ -26,7 +26,10 @@ try {
     <div class="container" style="max-width: 900px; padding-top: 2rem; padding-bottom: 2rem;">
         <div class="flex-between mb-2">
             <h1>Creer un evenement</h1>
-            <a href="my-events.php" class="btn btn-outline">Mes evenements</a>
+            <div style="display:flex; gap:.5rem;">
+                <button type="button" class="btn btn-outline" onclick="history.back()">← Retour</button>
+                <a href="my-events.php" class="btn btn-outline">Mes evenements</a>
+            </div>
         </div>
 
         <?php if ($flash_message): ?>
